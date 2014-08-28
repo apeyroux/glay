@@ -69,7 +69,7 @@ func (app Application) ListenPort() (port int, err error) {
 	// TODO: Mettre 1 au lieu de -1 pour avoir le 1er result ?
 	resultrx := rx.FindAllSubmatch(configfile, -1)
 	if len(resultrx) != 0 {
-		port, err := strconv.Atoi(string(resultrx[0][1]))
+		port, err = strconv.Atoi(string(resultrx[0][1]))
 		if err != nil {
 			return port, err
 		}

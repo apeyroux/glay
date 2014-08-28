@@ -35,6 +35,36 @@ const (
 	STOP
 )
 
+func (app Application) Start() (execr utils.ExecResult) {
+	cmd := fmt.Sprintf("%s %s", app.StartCmd, app.Home)
+	chanExecr := make(chan utils.ExecResult)
+	utils.Run(cmd, chanExecr)
+	execr = <-chanExecr
+	return
+}
+
+func (app Application) Stop() (execr utils.ExecResult) {
+	cmd := fmt.Sprintf("%s %s", app.StopCmd, app.Home)
+	chanExecr := make(chan utils.ExecResult)
+	utils.Run(cmd, chanExecr)
+	execr = <-chanExecr
+	return
+}
+
+func (app Application) Clean() (err error) {
+	state, _ := app.State()
+	if state == FAILURE {
+		pidpath := fmt.Sprintf("%s/server.pid", app.Home)
+		err = os.RemoveAll(pidpath)
+		if err != nil {
+			return
+		}
+	} else {
+		return errors.New("Your application does not need to be cleaned.")
+	}
+	return
+}
+
 func (app Application) State() (state State, err error) {
 	pidpath := fmt.Sprintf("%s/server.pid", app.Home)
 
@@ -62,20 +92,6 @@ func (app Application) State() (state State, err error) {
 	return
 }
 
-func (app Application) Clean() (err error) {
-	state, _ := app.State()
-	if state == FAILURE {
-		pidpath := fmt.Sprintf("%s/server.pid", app.Home)
-		err = os.RemoveAll(pidpath)
-		if err != nil {
-			return
-		}
-	} else {
-		return errors.New("Your application does not need to be cleaned.")
-	}
-	return
-}
-
 func (app Application) ListenPort() (port int, err error) {
 	rx := regexp.MustCompile("http.port=(\\d+)")
 	configfpath := fmt.Sprintf("%s/conf/application.conf", app.Home)
@@ -91,22 +107,6 @@ func (app Application) ListenPort() (port int, err error) {
 			return port, err
 		}
 	}
-	return
-}
-
-func (app Application) Start() (execr utils.ExecResult) {
-	cmd := fmt.Sprintf("%s %s", app.StartCmd, app.Home)
-	chanExecr := make(chan utils.ExecResult)
-	utils.Run(cmd, chanExecr)
-	execr = <-chanExecr
-	return
-}
-
-func (app Application) Stop() (execr utils.ExecResult) {
-	cmd := fmt.Sprintf("%s %s", app.StopCmd, app.Home)
-	chanExecr := make(chan utils.ExecResult)
-	utils.Run(cmd, chanExecr)
-	execr = <-chanExecr
 	return
 }
 

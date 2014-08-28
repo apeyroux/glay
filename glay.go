@@ -77,6 +77,22 @@ func (app Application) ListenPort() (port int, err error) {
 	return
 }
 
+func (app Application) Start() (execr utils.ExecResult) {
+	cmd := fmt.Sprintf("%s %s", app.StartCmd, app.Home)
+	chanExecr := make(chan utils.ExecResult)
+	utils.Run(cmd, chanExecr)
+	execr = <-chanExecr
+	return
+}
+
+func (app Application) Stop() (execr utils.ExecResult) {
+	cmd := fmt.Sprintf("%s %s", app.StopCmd, app.Home)
+	chanExecr := make(chan utils.ExecResult)
+	utils.Run(cmd, chanExecr)
+	execr = <-chanExecr
+	return
+}
+
 // Plugin Nagios.
 func NagiosPlugin(maxFailure int, apps []Application) {
 	nbfailure := 0

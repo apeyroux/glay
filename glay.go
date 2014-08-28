@@ -21,6 +21,8 @@ type Application struct {
 	User     string `json:"user"`
 }
 
+const VERSION = "1.0"
+
 const (
 	UP State = iota
 	DOWN

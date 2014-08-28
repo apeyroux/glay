@@ -12,7 +12,6 @@ import (
 
 type State int
 type Action int
-type Port int
 
 type Application struct {
 	Name     string `json:"name"`
@@ -60,7 +59,7 @@ func (app Application) State() (state State, err error) {
 	return
 }
 
-func (app Application) ListenPort() (port Port, err error) {
+func (app Application) ListenPort() (port int, err error) {
 	rx := regexp.MustCompile("http.port=(\\d+)")
 	configfpath := fmt.Sprintf("%s/conf/application.conf", app.Home)
 	configfile, err := ioutil.ReadFile(configfpath)
@@ -70,7 +69,10 @@ func (app Application) ListenPort() (port Port, err error) {
 	// TODO: Mettre 1 au lieu de -1 pour avoir le 1er result ?
 	resultrx := rx.FindAllSubmatch(configfile, -1)
 	if len(resultrx) != 0 {
-		port, err = strconv.Atoi(string(resultrx[0][1]))
+		port, err := strconv.Atoi(string(resultrx[0][1]))
+		if err != nil {
+			return port, err
+		}
 	}
 	return
 }

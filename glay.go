@@ -1,6 +1,7 @@
 package glay
 
 import (
+	"errors"
 	"fmt"
 	"github.com/communaute-cimi/glay/utils"
 	"io/ioutil"
@@ -57,6 +58,20 @@ func (app Application) State() (state State, err error) {
 		return UP, nil
 	} else {
 		return FAILURE, nil
+	}
+	return
+}
+
+func (app Application) Clean() (err error) {
+	state, _ := app.State()
+	if state == FAILURE {
+		pidpath := fmt.Sprintf("%s/server.pid", app.Home)
+		err = os.RemoveAll(pidpath)
+		if err != nil {
+			return
+		}
+	} else {
+		return errors.New("Your application does not need to be cleaned.")
 	}
 	return
 }

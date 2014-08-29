@@ -86,8 +86,32 @@ func (app Application) State() (state State, err error) {
 
 	if true == utils.PidIsAlive(int(pid)) {
 		return UP, nil
-	} else {
-		return FAILURE, nil
+	}
+
+	return FAILURE, nil
+}
+
+func (app Application) Pid() (pid int, err error) {
+	pidpath := fmt.Sprintf("%s/server.pid", app.Home)
+
+	if _, err = os.Stat(pidpath); os.IsNotExist(err) {
+		return
+	}
+
+	tbpid, err := ioutil.ReadFile(pidpath)
+
+	if err != nil {
+		return
+	}
+
+	pid, err = strconv.Atoi(strings.TrimSpace(string(tbpid)))
+
+	if err != nil {
+		return
+	}
+
+	if true == utils.PidIsAlive(int(pid)) {
+		return
 	}
 	return
 }

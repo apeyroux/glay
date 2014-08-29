@@ -20,7 +20,7 @@ func Run(cmd string, rchan chan ExecResult) {
 		r := ExecResult{}
 		r.Err = nil // TODO: obligatoire ? à tester
 		xcmd := exec.Command(fcmd[0], fcmd[1:len(fcmd)]...)
-		output, err := xcmd.CombinedOutput()
+		output, err := xcmd.Output()
 		if err != nil {
 			r.Err = err
 		}
